@@ -12,6 +12,9 @@ import android.util.TypedValue;
 import android.view.View;
 import android.text.InputFilter;
 import android.text.Spanned;
+import android.text.SpannableString;
+import android.text.TextUtils;
+import android.text.InputType;
 
 import com.totsp.crossword.shortyz.R;
 import com.totsp.crossword.puz.Playboard.Clue;
@@ -20,6 +23,11 @@ import com.totsp.crossword.puz.Note;
 import com.totsp.crossword.view.ScrollingImageView;
 
 public class NotesActivity extends ShortyzActivity {
+
+    private final int NO_PREDICT_INPUT
+        = InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS |
+          InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD;
+
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -71,7 +79,16 @@ public class NotesActivity extends ShortyzActivity {
                         sb.append(Character.toUpperCase(source.charAt(i)));
                     }
                 }
-                return sb.toString();
+
+                if (source instanceof Spanned) {
+                    SpannableString sp = new SpannableString(sb.toString());
+                    TextUtils.copySpansFrom((Spanned) source,
+                                            start, end, null,
+                                            sp, 0);
+                    return sp;
+                } else {
+                    return sb.toString();
+                }
             }
         };
 
@@ -80,6 +97,7 @@ public class NotesActivity extends ShortyzActivity {
             anagramSource.setText(note.getAnagramSource());
         }
         anagramSource.setFilters(new InputFilter[]{sourceFilter});
+        anagramSource.setInputType(NO_PREDICT_INPUT);
 
         InputFilter solFilter = new InputFilter() {
             public CharSequence filter(CharSequence source,
@@ -109,7 +127,15 @@ public class NotesActivity extends ShortyzActivity {
 
                 anagramSource.setText(newSource);
 
-                return sb.toString();
+                if (source instanceof Spanned) {
+                    SpannableString sp = new SpannableString(sb.toString());
+                    TextUtils.copySpansFrom((Spanned) source,
+                                            start, end, null,
+                                            sp, 0);
+                    return sp;
+                } else {
+                    return sb.toString();
+                }
             }
         };
 
@@ -118,6 +144,7 @@ public class NotesActivity extends ShortyzActivity {
             anagramSol.setText(note.getAnagramSolution());
         }
         anagramSol.setFilters(new InputFilter[]{solFilter});
+        anagramSol.setInputType(NO_PREDICT_INPUT);
     }
 
     public void onPause() {
