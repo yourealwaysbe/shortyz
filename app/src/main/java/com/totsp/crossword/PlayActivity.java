@@ -978,7 +978,6 @@ public class PlayActivity extends ShortyzActivity {
             return true;
         } else if (item.getTitle().toString().equals("Notes")) {
             Intent i = new Intent(PlayActivity.this, NotesActivity.class);
-            i.setData(Uri.fromFile(baseFile));
             PlayActivity.this.startActivityForResult(i, 0);
 
             return true;
