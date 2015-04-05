@@ -608,6 +608,8 @@ public class Puzzle implements Serializable{
         result = (prime * result) + ((title == null) ? 0 : title.hashCode());
         result = (prime * result) + ((version == null) ? 0 : version.hashCode());
         result = (prime * result) + width;
+        result = (prime *result) + Arrays.hashCode(acrossNotes);
+        result = (prime *result) + Arrays.hashCode(downNotes);
 
         return result;
     }

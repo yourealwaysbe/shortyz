@@ -42,4 +42,38 @@ public class Note implements Serializable {
                (anagramSource == null || anagramSource.length() == 0) &&
                (anagramSolution == null || anagramSolution.length() == 0);
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o instanceof Note) {
+            Note n = (Note) o;
+            return safeStringEquals(this.text, n.text) &&
+                   safeStringEquals(this.anagramSource, n.anagramSource) &&
+                   safeStringEquals(this.anagramSolution, n.anagramSolution);
+        }
+        return false;
+    }
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+
+        result = (prime * result) + (text == null ? 0 : text.hashCode());
+        result = (prime * result) +
+                 (anagramSource == null ? 0 : anagramSource.hashCode());
+        result = (prime * result) +
+                 (anagramSolution == null ? 0 : anagramSolution.hashCode());
+
+        return result;
+    }
+
+
+    private static final boolean safeStringEquals(String s1, String s2) {
+        if (s1 == null) {
+            return (s2 == null);
+        } else {
+            return s1.equals(s2);
+        }
+    }
 }
