@@ -220,7 +220,7 @@ public class IO {
                         Note n = new Note(readNullTerminatedString(input),
                                           readNullTerminatedString(input),
                                           readNullTerminatedString(input));
-                        puz.setNote(n, x, true);
+                        puz.setNote(n, x, false);
                     }
 
                     break;
