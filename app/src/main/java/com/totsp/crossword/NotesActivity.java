@@ -94,13 +94,16 @@ public class NotesActivity extends ShortyzActivity {
 
                 StringBuilder sb = new StringBuilder();
                 for (int i = start; i < end; i++) {
-                    if (Character.isLetter(source.charAt(i))) {
-                        char c = Character.toUpperCase(source.charAt(i));
-                        int pos = newSource.indexOf(String.valueOf(c));
+                    char c = source.charAt(i);
+                    if (Character.isLetter(c)) {
+                        char cUp = Character.toUpperCase(source.charAt(i));
+                        int pos = newSource.indexOf(String.valueOf(cUp));
                         if (pos >= 0) {
                             newSource.deleteCharAt(pos);
-                            sb.append(c);
+                            sb.append(cUp);
                         }
+                    } else if (isAnagramSolutionSpecialChar(c)) {
+                        sb.append(c);
                     }
                 }
 
@@ -134,5 +137,16 @@ public class NotesActivity extends ShortyzActivity {
         Clue c = BOARD.getClue();
 		Puzzle puz = BOARD.getPuzzle();
         puz.setNote(note, c.number, BOARD.isAcross());
+    }
+
+
+    private static final boolean isAnagramSolutionSpecialChar(char c) {
+        switch (c) {
+        case ' ':
+        case '-':
+            return true;
+        default:
+            return false;
+        }
     }
 }
