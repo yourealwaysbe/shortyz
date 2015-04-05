@@ -23,52 +23,62 @@
         android:layout_below="@+id/clueLine"
     />
 
-    <EditText 
-        android:id="@+id/notesBox"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:lines="4"
-        android:focusable="true"
+
+    <ScrollView
+        android:id="@+id/scroller"      
+        android:layout_width="fill_parent" 
+        android:layout_height="fill_parent"
         android:layout_below="@+id/miniboard"
-        android:gravity="top"
-    />
+        android:fillViewport="true" >
 
-    <TextView 
-        android:id="@+id/anagramSourceLab"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/anagram_source_lab"
-        android:layout_below="@+id/notesBox"
-    />
+        <LinearLayout 
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:orientation="vertical" >
+            
+            <EditText 
+                android:id="@+id/notesBox"
+                android:layout_width="fill_parent"
+                android:layout_height="0dip"
+                android:layout_weight="1.0"
+                android:gravity="top"
+            />
 
-    <EditText 
-        android:id="@+id/anagramSource"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:focusable="true"
-        android:layout_below="@+id/anagramSourceLab"
-        android:gravity="top"
-        android:inputType="text|textNoSuggestions|textFilter|textVisiblePassword|textCapCharacters"
-    />
+            <TextView 
+                android:id="@+id/anagramSourceLab"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/anagram_source_lab"
+                android:layout_below="@+id/notesBox"
+            />
 
-    <TextView 
-        android:id="@+id/anagramSolutionLab"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/anagram_solution_lab"
-        android:layout_below="@+id/notesBox"
-    />
+            <EditText 
+                android:id="@+id/anagramSource"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/anagramSourceLab"
+                android:gravity="top"
+                android:inputType="text|textNoSuggestions|textFilter|textVisiblePassword|textCapCharacters"
+            />
 
-    <EditText 
-        android:id="@+id/anagramSolution"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:focusable="true"
-        android:layout_below="@+id/anagramSolutionLab"
-        android:gravity="top"
-        android:inputType="text|textNoSuggestions|textFilter|textVisiblePassword|textCapCharacters"
-    />
+            <TextView 
+                android:id="@+id/anagramSolutionLab"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/anagram_solution_lab"
+                android:layout_below="@+id/notesBox"
+            />
 
-
+            <EditText 
+                android:id="@+id/anagramSolution"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/anagramSolutionLab"
+                android:gravity="top"
+                android:inputType="text|textNoSuggestions|textFilter|textVisiblePassword|textCapCharacters"
+            />
+        
+        </LinearLayout>
+    </ScrollView>
 
 </LinearLayout>
