@@ -133,13 +133,13 @@ public class Puzzle implements Serializable{
      * Initialize the temporary unscramble buffers.  Returns the scrambled solution.
      */
     public byte[] initializeUnscrambleData() {
-	unscrambleKey = new int[4];
-	unscrambleTmp = new byte[9];
+		unscrambleKey = new int[4];
+		unscrambleTmp = new byte[9];
 
-	byte[] solution = getSolutionDown();
-	unscrambleBuf = new byte[solution.length];
+		byte[] solution = getSolutionDown();
+		unscrambleBuf = new byte[solution.length];
 
-	return solution;
+		return solution;
     }
 
 
@@ -253,8 +253,8 @@ public class Puzzle implements Serializable{
     }
 
     public int getPercentFilled() {
-	int total = 0;
-	int filled = 0;
+		int total = 0;
+		int filled = 0;
 
         for (int x = 0; x < boxes.length; x++) {
             for (int y = 0; y < boxes[x].length; y++) {
@@ -320,51 +320,51 @@ public class Puzzle implements Serializable{
     }
 
     public void setVersion(String version) {
-	this.version = version;
+		this.version = version;
     }
 
-     public String getVersion() {
-	 return version;
-     }
+    public String getVersion() {
+		return version;
+    }
 
     public void setGEXT(boolean hasGEXT) {
-	this.hasGEXT = hasGEXT;
+		this.hasGEXT = hasGEXT;
     }
 
     public boolean getGEXT() {
-	return hasGEXT;
+		return hasGEXT;
     }
 
     public void setPosition(Position position) {
-	this.position = position;
+		this.position = position;
     }
 
     public Position getPosition() {
-	return position;
+		return position;
     }
 
     public void setAcross(boolean across) {
-	this.across = across;
+		this.across = across;
     }
 
     public boolean getAcross() {
-	return across;
+		return across;
     }
 
     public void setScrambled(boolean scrambled) {
-	this.scrambled = scrambled;
+		this.scrambled = scrambled;
     }
 
     public boolean isScrambled() {
-	return scrambled;
+		return scrambled;
     }
 
     public void setSolutionChecksum(short checksum) {
-	this.solutionChecksum = checksum;
+		this.solutionChecksum = checksum;
     }
 
     public short getSolutionChecksum() {
-	return solutionChecksum;
+		return solutionChecksum;
     }
 
     /**
