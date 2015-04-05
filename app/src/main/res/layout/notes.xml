@@ -58,6 +58,7 @@
                 android:layout_below="@+id/anagramSourceLab"
                 android:gravity="top"
                 android:inputType="text|textNoSuggestions|textFilter|textVisiblePassword|textCapCharacters"
+                android:typeface="monospace"
             />
 
             <TextView 
@@ -75,6 +76,7 @@
                 android:layout_below="@+id/anagramSolutionLab"
                 android:gravity="top"
                 android:inputType="text|textNoSuggestions|textFilter|textVisiblePassword|textCapCharacters"
+                android:typeface="monospace"
             />
         
         </LinearLayout>
