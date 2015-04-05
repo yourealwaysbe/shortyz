@@ -66,6 +66,11 @@
             android:theme="@style/Theme.Shortyz"
             ></activity>
         <activity
+            android:name="com.totsp.crossword.NotesActivity"
+            android:label="Notes"
+            android:theme="@style/Theme.Shortyz"
+            ></activity>
+        <activity
             android:name="com.totsp.crossword.HTMLActivity"
             android:label="Shortyz"
             android:theme="@style/Theme.Shortyz"

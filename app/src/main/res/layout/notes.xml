@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout 
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="vertical" >
+	
+    <TextView 
+        android:id="@+id/clueLine" 
+		android:layout_width="fill_parent"
+		android:layout_height="wrap_content" 
+		android:textSize="12dip" 
+		android:minLines="2"
+		android:maxLines="4"
+		android:textColor="#FFFFFF"
+		android:background="#2C2C2C"
+	/>
+
+    <com.totsp.crossword.view.ScrollingImageView
+        android:id="@+id/miniboard"
+        android:layout_width="fill_parent"
+        android:layout_height="40dp"
+        android:layout_below="@+id/clueLine"
+    />
+
+    <EditText 
+        android:id="@+id/notesBox"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:lines="4"
+        android:focusable="true"
+        android:layout_below="@+id/miniboard"
+        android:gravity="top"
+    />
+
+    <TextView 
+        android:id="@+id/anagramSourceLab"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/anagram_source_lab"
+        android:layout_below="@+id/notesBox"
+    />
+
+    <EditText 
+        android:id="@+id/anagramSource"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:focusable="true"
+        android:layout_below="@+id/anagramSourceLab"
+        android:gravity="top"
+        android:autoText="false"
+    />
+
+    <TextView 
+        android:id="@+id/anagramSolutionLab"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/anagram_solution_lab"
+        android:layout_below="@+id/notesBox"
+    />
+
+    <EditText 
+        android:id="@+id/anagramSolution"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:focusable="true"
+        android:layout_below="@+id/anagramSolutionLab"
+        android:gravity="top"
+        android:autoText="false"
+    />
+
+
+
+</LinearLayout>

@@ -7,6 +7,7 @@ import com.totsp.crossword.io.versions.IOVersion3;
 import com.totsp.crossword.puz.Box;
 import com.totsp.crossword.puz.Puzzle;
 import com.totsp.crossword.puz.PuzzleMeta;
+import com.totsp.crossword.puz.Note;
 
 import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
@@ -31,6 +32,8 @@ public class IO {
 
 	// Extra Section IDs
 	private static final int GEXT = 0;
+	private static final int ANTS = 1;
+	private static final int DNTS = 2;
 
 	// GEXT section bitmasks
 	private static final byte GEXT_SQUARE_CIRCLED = (byte) 0x80;
@@ -192,7 +195,7 @@ public class IO {
 
 		puz.setNotes(readNullTerminatedString(input));
 
-		boolean eof = false;
+        boolean eof = false;
 
 		while (!eof) {
 			try {
@@ -201,6 +204,26 @@ public class IO {
 					readGextSection(input, puz);
 
 					break;
+
+                case ANTS:
+                    for (int x = 0; x < acrossClues.size(); x++) {
+                        Note n = new Note(readNullTerminatedString(input),
+                                          readNullTerminatedString(input),
+                                          readNullTerminatedString(input));
+                        puz.setNote(n, x, true);
+                    }
+
+                    break;
+
+                case DNTS:
+                    for (int x = 0; x < downClues.size(); x++) {
+                        Note n = new Note(readNullTerminatedString(input),
+                                          readNullTerminatedString(input),
+                                          readNullTerminatedString(input));
+                        puz.setNote(n, x, true);
+                    }
+
+                    break;
 
 				default:
 					skipExtraSection(input);
@@ -263,7 +286,11 @@ public class IO {
 
 		if ("GEXT".equals(section)) {
 			return GEXT;
-		}
+		} else if ("ANTS".equals(section)) {
+            return ANTS;
+        } else if ("DNTS".equals(section)) {
+            return DNTS;
+        }
 
 		return -1;
 	}
@@ -450,6 +477,38 @@ public class IO {
 		}
 
 		writeNullTerminatedString(tmpDos, puz.getNotes());
+
+        Note[] acrossNotes = puz.getAcrossNotes();
+        if (acrossNotes != null) {
+            tmpDos.writeBytes("ANTS");
+            for (Note note : acrossNotes) {
+                if (note != null) {
+                    writeNullTerminatedString(tmpDos, note.getText());
+                    writeNullTerminatedString(tmpDos, note.getAnagramSource());
+                    writeNullTerminatedString(tmpDos, note.getAnagramSolution());
+                } else {
+                    writeNullTerminatedString(tmpDos, null);
+                    writeNullTerminatedString(tmpDos, null);
+                    writeNullTerminatedString(tmpDos, null);
+                }
+            }
+        }
+
+        Note[] downNotes = puz.getDownNotes();
+        if (downNotes != null) {
+            tmpDos.writeBytes("DNTS");
+            for (Note note : puz.getDownNotes()) {
+                if (note != null) {
+                    writeNullTerminatedString(tmpDos, note.getText());
+                    writeNullTerminatedString(tmpDos, note.getAnagramSource());
+                    writeNullTerminatedString(tmpDos, note.getAnagramSolution());
+                } else {
+                    writeNullTerminatedString(tmpDos, null);
+                    writeNullTerminatedString(tmpDos, null);
+                    writeNullTerminatedString(tmpDos, null);
+                }
+            }
+        }
 
 		if (puz.getGEXT()) {
 			tmpDos.writeBytes("GEXT");

@@ -620,7 +620,7 @@ public class PlayActivity extends ShortyzActivity {
 
         this.setClueSize(prefs.getInt("clueSize", 12));
         setTitle("Shortyz - " + puz.getTitle() + " - " + puz.getAuthor()
-                + " - 	" + puz.getCopyright());
+                + " -	" + puz.getCopyright());
         this.showCount = prefs.getBoolean("showCount", false);
         if (this.prefs.getBoolean("fitToScreen", false) || (android.os.Build.VERSION.SDK_INT > 11 && ShortyzApplication.isLandscape(metrics)) && (ShortyzApplication.isTabletish(metrics) || ShortyzApplication.isMiniTabletish(metrics))) {
             this.handler.postDelayed(new Runnable() {
@@ -706,6 +706,7 @@ public class PlayActivity extends ShortyzActivity {
         zoom.add(createSpannableForMenu("Zoom Out")).setTitleCondensed("Zoom Out");
         zoom.add(createSpannableForMenu("Fit to Screen")).setTitleCondensed("Fit to Screen");
         zoom.add(createSpannableForMenu("Zoom Reset")).setTitleCondensed("Zoom Reset");
+        menu.add("Notes").setIcon(android.R.drawable.ic_menu_agenda);
         menu.add("Info").setIcon(android.R.drawable.ic_menu_info_details);
         menu.add("Help").setIcon(android.R.drawable.ic_menu_help);
         menu.add("Settings").setIcon(android.R.drawable.ic_menu_preferences);
@@ -971,6 +972,12 @@ public class PlayActivity extends ShortyzActivity {
             return true;
         } else if (item.getTitle().toString().equals("Clues")) {
             Intent i = new Intent(PlayActivity.this, ClueListActivity.class);
+            i.setData(Uri.fromFile(baseFile));
+            PlayActivity.this.startActivityForResult(i, 0);
+
+            return true;
+        } else if (item.getTitle().toString().equals("Notes")) {
+            Intent i = new Intent(PlayActivity.this, NotesActivity.class);
             i.setData(Uri.fromFile(baseFile));
             PlayActivity.this.startActivityForResult(i, 0);
 
