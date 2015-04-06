@@ -210,7 +210,7 @@ public class IO {
                         Note n = new Note(readNullTerminatedString(input),
                                           readNullTerminatedString(input),
                                           readNullTerminatedString(input));
-                        puz.setNote(n, x, true);
+                        puz.setNoteRaw(n, x, true);
                     }
 
                     break;
@@ -220,7 +220,7 @@ public class IO {
                         Note n = new Note(readNullTerminatedString(input),
                                           readNullTerminatedString(input),
                                           readNullTerminatedString(input));
-                        puz.setNote(n, x, false);
+                        puz.setNoteRaw(n, x, false);
                     }
 
                     break;
@@ -481,33 +481,13 @@ public class IO {
         Note[] acrossNotes = puz.getAcrossNotes();
         if (acrossNotes != null) {
             tmpDos.writeBytes("ANTS");
-            for (Note note : acrossNotes) {
-                if (note != null) {
-                    writeNullTerminatedString(tmpDos, note.getText());
-                    writeNullTerminatedString(tmpDos, note.getAnagramSource());
-                    writeNullTerminatedString(tmpDos, note.getAnagramSolution());
-                } else {
-                    writeNullTerminatedString(tmpDos, null);
-                    writeNullTerminatedString(tmpDos, null);
-                    writeNullTerminatedString(tmpDos, null);
-                }
-            }
+            saveNotesNative(tmpDos, acrossNotes);
         }
 
         Note[] downNotes = puz.getDownNotes();
         if (downNotes != null) {
             tmpDos.writeBytes("DNTS");
-            for (Note note : puz.getDownNotes()) {
-                if (note != null) {
-                    writeNullTerminatedString(tmpDos, note.getText());
-                    writeNullTerminatedString(tmpDos, note.getAnagramSource());
-                    writeNullTerminatedString(tmpDos, note.getAnagramSolution());
-                } else {
-                    writeNullTerminatedString(tmpDos, null);
-                    writeNullTerminatedString(tmpDos, null);
-                    writeNullTerminatedString(tmpDos, null);
-                }
-            }
+            saveNotesNative(tmpDos, downNotes);
         }
 
 		if (puz.getGEXT()) {
@@ -698,4 +678,19 @@ public class IO {
 			int cksum) {
 		return cksum_region(puzByteArray, 0x34, numberOfBoxes, cksum);
 	}
+
+    private static void saveNotesNative(DataOutputStream dos,
+                                        Note[] notes) throws IOException {
+        for (Note note : notes) {
+            if (note != null) {
+                writeNullTerminatedString(dos, note.getText());
+                writeNullTerminatedString(dos, note.getAnagramSource());
+                writeNullTerminatedString(dos, note.getAnagramSolution());
+            } else {
+                writeNullTerminatedString(dos, null);
+                writeNullTerminatedString(dos, null);
+                writeNullTerminatedString(dos, null);
+            }
+        }
+    }
 }

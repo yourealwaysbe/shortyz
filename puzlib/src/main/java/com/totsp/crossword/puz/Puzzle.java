@@ -410,32 +410,55 @@ public class Puzzle implements Serializable{
         else if (!isAcross && downNotes == null)
             return null;
 
-        if (isAcross && 0 <= clueNum && clueNum < acrossNotes.length) {
-            return acrossNotes[clueNum];
-        } else if (!isAcross && 0 <= clueNum && clueNum < downNotes.length) {
-            return downNotes[clueNum];
+        if (isAcross) {
+            int idx = Arrays.binarySearch(acrossCluesLookup, clueNum);
+            return (idx < 0) ? null : acrossNotes[idx];
+        } else {
+            int idx = Arrays.binarySearch(downCluesLookup, clueNum);
+            return (idx < 0) ? null : downNotes[idx];
         }
-
-        return null;
     }
 
+    /**
+     * Assumes acrossClues and downClues has been initialised
+     */
     public void setNote(Note note, int clueNum, boolean isAcross) {
         if (note == null || note.isEmpty()) {
             return;
         }
 
-        if (isAcross && 0 <= clueNum && clueNum < acrossClues.length) {
-            if (acrossNotes == null) {
-                acrossNotes = new Note[acrossClues.length];
+        int idx = isAcross ? Arrays.binarySearch(acrossCluesLookup, clueNum)
+                           : Arrays.binarySearch(downCluesLookup, clueNum);
+
+        setNoteRaw(note, idx, isAcross);
+    }
+
+    /**
+     * Assumes acrossClues and downClues has been initialised
+     */
+    public void setNoteRaw(Note note, int clueIdx, boolean isAcross) {
+        if (note == null || note.isEmpty()) {
+            return;
+        }
+
+        if (isAcross) {
+            if (clueIdx >= 0 && clueIdx <= acrossClues.length) {
+                if (acrossNotes == null) {
+                    acrossNotes = new Note[acrossClues.length];
+                }
+                acrossNotes[clueIdx] = note;
             }
-            acrossNotes[clueNum] = note;
-        } else if (!isAcross && 0 <= clueNum && clueNum < downClues.length) {
-            if (downNotes == null) {
-                downNotes = new Note[downClues.length];
+        } else {
+            if (clueIdx >= 0 && clueIdx <= downClues.length) {
+                if (downNotes == null) {
+                    downNotes = new Note[downClues.length];
+                }
+                downNotes[clueIdx] = note;
             }
-            downNotes[clueNum] = note;
         }
     }
+
+
 
     @Override
     public boolean equals(Object obj) {
