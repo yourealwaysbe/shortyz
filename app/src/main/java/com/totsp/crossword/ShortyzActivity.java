@@ -16,6 +16,7 @@ import android.os.StatFs;
 import android.preference.PreferenceManager;
 import android.util.DisplayMetrics;
 import android.widget.Toast;
+import com.totsp.crossword.shortyz.R;
 
 import com.totsp.crossword.versions.AndroidVersionUtils;
 

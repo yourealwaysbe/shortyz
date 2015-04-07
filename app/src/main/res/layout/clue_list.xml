@@ -14,7 +14,7 @@
             android:layout_alignParentBottom="true"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:keyBackground="@color/background_material_light"
+            android:keyBackground="@color/transparent"
             android:keyTextColor="@color/textColorPrimary"
             android:background="@color/background_material_light"
             android:shadowRadius="0.0"
