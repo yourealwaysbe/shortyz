@@ -51,7 +51,6 @@ public class NotesActivity extends ShortyzKeyboardActivity {
           InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD;
 
     private ScrollingImageView imageView;
-
     private BoardEditText scratchView;
 
 	private ImaginaryTimer timer;
@@ -149,6 +148,16 @@ public class NotesActivity extends ShortyzKeyboardActivity {
 
 		scratchView = (BoardEditText) this.findViewById(R.id.scratchMiniboard);
         scratchView.setLength(curWordLen);
+		scratchView.setContextMenuListener(new ClickListener() {
+			public void onContextMenu(Point e) {
+				// TODO Auto-generated method stub
+			}
+
+			public void onTap(Point e) {
+                NotesActivity.this.render();
+			}
+		});
+
 
 		Puzzle puz = BOARD.getPuzzle();
         Note note = puz.getNote(c.number, BOARD.isAcross());

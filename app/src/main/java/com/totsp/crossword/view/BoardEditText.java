@@ -25,12 +25,19 @@ public class BoardEditText extends ScrollingImageView {
     private boolean useNativeKeyboard = false;
     protected Configuration configuration;
 
+    // we have our own onTap for input, but the activity containing the widget
+    // might also need to know about on taps, so override setContextMenuListener
+    // to intercept
+    private ClickListener ctxListener;
+
     public BoardEditText(Context context, AttributeSet as) {
         super(context, as);
 
-        setContextMenuListener(new ClickListener() {
+        super.setContextMenuListener(new ClickListener() {
             public void onContextMenu(Point e) {
-                // TODO Auto-generated method stub
+                if (ctxListener != null) {
+                    ctxListener.onContextMenu(e);
+                }
             }
 
             public void onTap(Point e) {
@@ -41,6 +48,10 @@ public class BoardEditText extends ScrollingImageView {
                     selection.across = box;
                 }
                 BoardEditText.this.render();
+
+                if (ctxListener != null) {
+                    ctxListener.onTap(e);
+                }
             }
         });
 
@@ -59,6 +70,11 @@ public class BoardEditText extends ScrollingImageView {
         useNativeKeyboard = "NATIVE".equals(prefs.getString("keyboardType", ""));
 
         configuration = context.getResources().getConfiguration();
+    }
+
+    @Override
+    public void setContextMenuListener(ClickListener l) {
+        this.ctxListener = l;
     }
 
     public void setLength(int len) {
