@@ -88,13 +88,13 @@
                 android:layout_below="@+id/notesBox"
             />
 
-            <EditText 
+            <com.totsp.crossword.view.BoardEditText
                 android:id="@+id/anagramSource"
                 android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
                 android:layout_below="@+id/anagramSourceLab"
-                android:gravity="top"
-                android:typeface="monospace"
+                android:layout_height="40dp"
+                android:focusable="true" 
+                android:focusableInTouchMode="true" 
             />
 
             <TextView 
@@ -105,15 +105,15 @@
                 android:layout_below="@+id/notesBox"
             />
 
-            <EditText 
+            <com.totsp.crossword.view.BoardEditText
                 android:id="@+id/anagramSolution"
                 android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
                 android:layout_below="@+id/anagramSolutionLab"
-                android:gravity="top"
-                android:typeface="monospace"
+                android:layout_height="40dp"
+                android:focusable="true" 
+                android:focusableInTouchMode="true" 
             />
-        
+       
         </LinearLayout>
     </ScrollView>
 

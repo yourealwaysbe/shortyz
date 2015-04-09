@@ -3,6 +3,8 @@ package com.totsp.crossword.view;
 import static com.totsp.crossword.shortyz.ShortyzApplication.RENDERER;
 import static com.totsp.crossword.shortyz.ShortyzApplication.BOARD;
 
+import java.lang.StringBuilder;
+
 import android.preference.PreferenceManager;
 import android.content.SharedPreferences;
 import android.content.Context;
@@ -17,18 +19,38 @@ import com.totsp.crossword.puz.Box;
 import com.totsp.crossword.PlayActivity;
 
 public class BoardEditText extends ScrollingImageView {
+
+    public interface BoardEditFilter {
+        /**
+         * @param oldChar the character being deleted
+         * @param pos the position of the box being deleted from
+         * @return true if the deletion is allowed to occur
+         */
+        public boolean delete(char oldChar, int pos);
+
+        /**
+         * @param oldChar the character that used to be in the box
+         * @param newChar the character to replace it with
+         * @param pos the position of the box
+         * @return the actual character to replace the old one with or null char
+         * if the replacement is not allowed
+         */
+        public char filter(char oldChar, char newChar, int pos);
+    }
+
     private Position selection = new Position(-1, 0);
     private Box[] boxes;
     // surely a better way...
     static final String ALPHA = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 
     private boolean useNativeKeyboard = false;
-    protected Configuration configuration;
+    private Configuration configuration;
 
     // we have our own onTap for input, but the activity containing the widget
     // might also need to know about on taps, so override setContextMenuListener
     // to intercept
     private ClickListener ctxListener;
+    private BoardEditFilter[] filters;
 
     public BoardEditText(Context context, AttributeSet as) {
         super(context, as);
@@ -44,7 +66,7 @@ public class BoardEditText extends ScrollingImageView {
                 BoardEditText.this.requestFocus();
 
                 int box = RENDERER.findBoxNoScale(e);
-                if (box < boxes.length) {
+                if (boxes != null && box < boxes.length) {
                     selection.across = box;
                 }
                 BoardEditText.this.render();
@@ -77,24 +99,72 @@ public class BoardEditText extends ScrollingImageView {
         this.ctxListener = l;
     }
 
-    public void setLength(int len) {
-        Box[] newBoxes = new Box[len];
+    public void setFilters(BoardEditFilter[] filters) {
+        this.filters = filters;
+    }
 
-        int overlap = 0;
-        if (boxes != null) {
-            overlap = Math.min(len, boxes.length);
-            for (int i = 0; i < overlap; i++) {
-                newBoxes[i] = boxes[i];
+    public void setLength(int len) {
+        if (boxes == null || len != boxes.length) {
+            Box[] newBoxes = new Box[len];
+
+            int overlap = 0;
+            if (boxes != null) {
+                overlap = Math.min(len, boxes.length);
+                for (int i = 0; i < overlap; i++) {
+                    newBoxes[i] = boxes[i];
+                }
+            }
+
+            for (int i = overlap; i < len; ++i) {
+                newBoxes[i] = new Box();
+            }
+
+            boxes = newBoxes;
+
+            render();
+        }
+    }
+
+    public char getResponse(int pos) {
+        if (0 <= pos && pos < boxes.length) {
+            return boxes[pos].getResponse();
+        } else {
+            return '\0';
+        }
+    }
+
+    public void setResponse(int pos, char c) {
+        if (0 <= pos && pos < boxes.length) {
+            boxes[pos].setResponse(c);
+            render();
+        }
+    }
+
+    public void setFromString(String text) {
+        if (text == null) {
+            boxes = null;
+        } else {
+            boxes = new Box[text.length()];
+            for (int i = 0; i < text.length(); i++) {
+                boxes[i] = new Box();
+                boxes[i].setResponse(text.charAt(i));
             }
         }
+        render();
+    }
 
-        for (int i = overlap; i < len; ++i) {
-            newBoxes[i] = new Box();
+    public String toString() {
+        if (boxes == null) {
+            return "";
         }
 
-        boxes = newBoxes;
+        StringBuilder sb = new StringBuilder();
 
-        render();
+        for (int i = 0; i < boxes.length; i++) {
+            sb.append(boxes[i].getResponse());
+        }
+
+        return sb.toString();
     }
 
     public boolean onKeyUp(int keyCode, KeyEvent event) {
@@ -110,7 +180,7 @@ public class BoardEditText extends ScrollingImageView {
 			return true;
 
 		case KeyEvent.KEYCODE_DPAD_RIGHT:
-			if (selection.across < boxes.length - 1) {
+			if (boxes != null && selection.across < boxes.length - 1) {
 				selection.across++;
 				this.render();
 			}
@@ -118,25 +188,30 @@ public class BoardEditText extends ScrollingImageView {
 			return true;
 
 		case KeyEvent.KEYCODE_DEL:
-            boxes[selection.across].setResponse(' ');
-            if (selection.across > 0) {
-                selection.across--;
+            if (boxes != null && canDelete(selection)) {
+                boxes[selection.across].setResponse(' ');
+                if (selection.across > 0) {
+                    selection.across--;
+                }
                 this.render();
             }
             return true;
 
 		case KeyEvent.KEYCODE_SPACE:
-            boxes[selection.across].setResponse(' ');
+            if (boxes != null && canDelete(selection)) {
+                boxes[selection.across].setResponse(' ');
 
-            if (selection.across < boxes.length - 1) {
-                selection.across++;
-
-                while (BOARD.isSkipCompletedLetters() &&
-                       boxes[selection.across].getResponse() != ' ' &&
-                       selection.across < boxes.length - 1) {
+                if (selection.across < boxes.length - 1) {
                     selection.across++;
+
+                    while (BOARD.isSkipCompletedLetters() &&
+                           boxes[selection.across].getResponse() != ' ' &&
+                           selection.across < boxes.length - 1) {
+                        selection.across++;
+                    }
                 }
-				this.render();
+
+                this.render();
             }
             return true;
         }
@@ -145,20 +220,24 @@ public class BoardEditText extends ScrollingImageView {
 				.toUpperCase(((this.configuration.hardKeyboardHidden == Configuration.HARDKEYBOARDHIDDEN_NO) || this.useNativeKeyboard) ? event
 						.getDisplayLabel() : ((char) keyCode));
 
-		if (ALPHA.indexOf(c) != -1) {
-			boxes[selection.across].setResponse(c);
+		if (boxes != null && ALPHA.indexOf(c) != -1) {
+            c = filterReplacement(c, selection);
 
-            if (selection.across < boxes.length - 1) {
-                selection.across++;
+            if (c != '\0') {
+                boxes[selection.across].setResponse(c);
 
-                while (BOARD.isSkipCompletedLetters() &&
-                       boxes[selection.across].getResponse() != ' ' &&
-                       selection.across < boxes.length - 1) {
+                if (selection.across < boxes.length - 1) {
                     selection.across++;
-                }
-            }
 
-            this.render();
+                    while (BOARD.isSkipCompletedLetters() &&
+                           boxes[selection.across].getResponse() != ' ' &&
+                           selection.across < boxes.length - 1) {
+                        selection.across++;
+                    }
+                }
+
+                this.render();
+            }
 
             return true;
 		}
@@ -170,4 +249,33 @@ public class BoardEditText extends ScrollingImageView {
         setBitmap(RENDERER.drawBoxes(boxes, selection));
     }
 
+    private boolean canDelete(Position pos) {
+        if (filters == null)
+            return true;
+
+        char oldChar = boxes[pos.across].getResponse();
+
+        for (BoardEditFilter filter : filters) {
+            if (filter != null && !filter.delete(oldChar, pos.across)) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    private char filterReplacement(char newChar, Position pos) {
+        if (filters == null)
+            return newChar;
+
+        char oldChar = boxes[pos.across].getResponse();
+
+        for (BoardEditFilter filter : filters) {
+            if (filter != null) {
+                newChar = filter.filter(oldChar, newChar, pos.across);
+            }
+        }
+
+        return newChar;
+    }
 }

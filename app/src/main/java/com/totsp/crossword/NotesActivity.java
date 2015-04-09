@@ -10,18 +10,11 @@ import android.os.Bundle;
 import android.net.Uri;
 import android.widget.EditText;
 import android.widget.TextView;
-import android.content.SharedPreferences;
 import android.util.TypedValue;
 import android.view.MotionEvent;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnFocusChangeListener;
-import android.view.WindowManager;
-import android.text.InputFilter;
-import android.text.Spanned;
-import android.text.SpannableString;
-import android.text.TextUtils;
-import android.text.InputType;
 import android.inputmethodservice.KeyboardView;
 import android.util.Log;
 import android.content.Intent;
@@ -36,6 +29,7 @@ import com.totsp.crossword.puz.Playboard.Clue;
 import com.totsp.crossword.puz.Puzzle;
 import com.totsp.crossword.puz.Note;
 import com.totsp.crossword.view.BoardEditText;
+import com.totsp.crossword.view.BoardEditText.BoardEditFilter;
 import com.totsp.crossword.view.ScrollingImageView;
 import com.totsp.crossword.view.ScrollingImageView.ClickListener;
 import com.totsp.crossword.puz.Playboard.Word;
@@ -46,15 +40,15 @@ import com.totsp.crossword.puz.Box;
 
 public class NotesActivity extends ShortyzKeyboardActivity {
 
-    private final int NO_PREDICT_INPUT
-        = InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS |
-          InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD;
-
     private ScrollingImageView imageView;
     private BoardEditText scratchView;
+    private BoardEditText anagramSourceView;
+    private BoardEditText anagramSolView;
 
 	private ImaginaryTimer timer;
 	private File baseFile;
+
+    private int numAnagramLetters = 0;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -146,9 +140,7 @@ public class NotesActivity extends ShortyzKeyboardActivity {
 			}
 		});
 
-		scratchView = (BoardEditText) this.findViewById(R.id.scratchMiniboard);
-        scratchView.setLength(curWordLen);
-		scratchView.setContextMenuListener(new ClickListener() {
+        ClickListener kbdRenderClickListener = new ClickListener() {
 			public void onContextMenu(Point e) {
 				// TODO Auto-generated method stub
 			}
@@ -156,8 +148,11 @@ public class NotesActivity extends ShortyzKeyboardActivity {
 			public void onTap(Point e) {
                 NotesActivity.this.render();
 			}
-		});
+		};
 
+		scratchView = (BoardEditText) this.findViewById(R.id.scratchMiniboard);
+        scratchView.setLength(curWordLen);
+		scratchView.setContextMenuListener(kbdRenderClickListener);
 
 		Puzzle puz = BOARD.getPuzzle();
         Note note = puz.getNote(c.number, BOARD.isAcross());
@@ -166,83 +161,84 @@ public class NotesActivity extends ShortyzKeyboardActivity {
             notesBox.setText(note.getText());
         }
 
-        InputFilter sourceFilter = new InputFilter() {
-            public CharSequence filter(CharSequence source,
-                                       int start, int end,
-                                       Spanned dest, int dstart, int dend) {
-                StringBuilder sb = new StringBuilder();
-                for (int i = start; i < end; i++) {
-                    if (Character.isLetter(source.charAt(i))) {
-                        sb.append(Character.toUpperCase(source.charAt(i)));
+        anagramSourceView = (BoardEditText) this.findViewById(R.id.anagramSource);
+        if (note != null) {
+            String src = note.getAnagramSource();
+            if (src != null) {
+                anagramSourceView.setFromString(src);
+                for (int i = 0; i < src.length(); i++) {
+                    if (Character.isLetter(src.charAt(i))) {
+                        numAnagramLetters++;
                     }
                 }
+            }
+        }
 
-                if (source instanceof Spanned) {
-                    SpannableString sp = new SpannableString(sb.toString());
-                    TextUtils.copySpansFrom((Spanned) source,
-                                            start, end, null,
-                                            sp, 0);
-                    return sp;
+        anagramSolView = (BoardEditText) this.findViewById(R.id.anagramSolution);
+        if (note != null) {
+            String sol = note.getAnagramSolution();
+            if (sol != null) {
+                anagramSolView.setFromString(sol);
+                for (int i = 0; i < sol.length(); i++) {
+                    if (Character.isLetter(sol.charAt(i))) {
+                        numAnagramLetters++;
+                    }
+                }
+            }
+        }
+
+        BoardEditFilter sourceFilter = new BoardEditFilter() {
+            public boolean delete(char oldChar, int pos) {
+                if (Character.isLetter(oldChar)) {
+                    numAnagramLetters--;
+                }
+                return true;
+            }
+
+            public char filter(char oldChar, char newChar, int pos) {
+                if (numAnagramLetters < curWordLen &&
+                    Character.isLetter(newChar)) {
+                        numAnagramLetters++;
+                        return newChar;
                 } else {
-                    return sb.toString();
+                    return '\0';
                 }
             }
         };
 
-        final EditText anagramSource = (EditText) this.findViewById(R.id.anagramSource);
-        if (note != null) {
-            anagramSource.setText(note.getAnagramSource());
-        }
-        anagramSource.setFilters(new InputFilter[]{sourceFilter});
-        anagramSource.setInputType(NO_PREDICT_INPUT);
+        anagramSourceView.setLength(curWordLen);
+        anagramSourceView.setFilters(new BoardEditFilter[]{sourceFilter});
+		anagramSourceView.setContextMenuListener(kbdRenderClickListener);
 
-        InputFilter solFilter = new InputFilter() {
-            public CharSequence filter(CharSequence source,
-                                       int start, int end,
-                                       Spanned dest, int dstart, int dend) {
-                // put everything removed back in the source
-                StringBuilder newSource = new StringBuilder();
-                newSource.append(anagramSource.getText());
-                for (int i = dstart; i < dend; i++) {
-                    newSource.append(dest.charAt(i));
-                }
-
-                StringBuilder sb = new StringBuilder();
-                for (int i = start; i < end; i++) {
-                    char c = source.charAt(i);
-                    if (Character.isLetter(c)) {
-                        char cUp = Character.toUpperCase(source.charAt(i));
-                        int pos = newSource.indexOf(String.valueOf(cUp));
-                        if (pos >= 0) {
-                            newSource.deleteCharAt(pos);
-                            sb.append(cUp);
+        BoardEditFilter solFilter = new BoardEditFilter() {
+            public boolean delete(char oldChar, int pos) {
+                if (Character.isLetter(oldChar)) {
+                    for (int i = 0; i < curWordLen; i++) {
+                        if (anagramSourceView.getResponse(i) == ' ') {
+                            anagramSourceView.setResponse(i, oldChar);
+                            return true;
                         }
-                    } else if (isAnagramSolutionSpecialChar(c)) {
-                        sb.append(c);
                     }
                 }
+                return true;
+            }
 
-                anagramSource.setText(newSource);
-
-                if (source instanceof Spanned) {
-                    SpannableString sp = new SpannableString(sb.toString());
-                    TextUtils.copySpansFrom((Spanned) source,
-                                            start, end, null,
-                                            sp, 0);
-                    return sp;
-                } else {
-                    return sb.toString();
+            public char filter(char oldChar, char newChar, int pos) {
+                if (Character.isLetter(newChar)) {
+                    for (int i = 0; i < curWordLen; i++) {
+                        if (anagramSourceView.getResponse(i) == newChar) {
+                            anagramSourceView.setResponse(i, oldChar);
+                            return newChar;
+                        }
+                    }
                 }
+                return '\0';
             }
         };
 
-        EditText anagramSol = (EditText) this.findViewById(R.id.anagramSolution);
-        if (note != null) {
-            anagramSol.setText(note.getAnagramSolution());
-        }
-        anagramSol.setFilters(new InputFilter[]{solFilter});
-        anagramSol.setInputType(NO_PREDICT_INPUT);
-
+        anagramSolView.setLength(curWordLen);
+        anagramSolView.setFilters(new BoardEditFilter[]{solFilter});
+		anagramSolView.setContextMenuListener(kbdRenderClickListener);
 
         // if not using native keyboard, hide shortyz' when the notesBox is in
         // focus
@@ -259,8 +255,6 @@ public class NotesActivity extends ShortyzKeyboardActivity {
 
         EditText notesBox = (EditText) this.findViewById(R.id.notesBox);
         notesBox.setOnFocusChangeListener(hideKbdListener);
-        anagramSource.setOnFocusChangeListener(hideKbdListener);
-        anagramSol.setOnFocusChangeListener(hideKbdListener);
 
         this.render();
     }
@@ -271,11 +265,8 @@ public class NotesActivity extends ShortyzKeyboardActivity {
         EditText notesBox = (EditText) this.findViewById(R.id.notesBox);
         String text = notesBox.getText().toString();
 
-        EditText anagramSrcBox = (EditText) this.findViewById(R.id.anagramSource);
-        String anagramSource = anagramSrcBox.getText().toString();
-
-        EditText anagramSolBox = (EditText) this.findViewById(R.id.anagramSolution);
-        String anagramSolution = anagramSolBox.getText().toString();
+        String anagramSource = anagramSourceView.toString();
+        String anagramSolution = anagramSolView.toString();
 
         Note note = new Note(text, anagramSource, anagramSolution);
 
@@ -303,6 +294,8 @@ public class NotesActivity extends ShortyzKeyboardActivity {
 			InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
 			imm.hideSoftInputFromWindow(this.imageView.getWindowToken(), 0);
 			imm.hideSoftInputFromWindow(this.scratchView.getWindowToken(), 0);
+			imm.hideSoftInputFromWindow(this.anagramSourceView.getWindowToken(), 0);
+			imm.hideSoftInputFromWindow(this.anagramSolView.getWindowToken(), 0);
 		}
 	}
 

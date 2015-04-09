@@ -205,6 +205,10 @@ public class PlayboardRenderer {
     }
 
     public Bitmap drawBoxes(Box[] boxes, Position highlightPosition) {
+        if (boxes == null || boxes.length == 0) {
+            return null;
+        }
+
         int boxSize = (int) (BOX_SIZE * this.logicalDensity);
         Bitmap bitmap = Bitmap.createBitmap((int) (boxes.length * boxSize),
                                             (int) (boxSize),
