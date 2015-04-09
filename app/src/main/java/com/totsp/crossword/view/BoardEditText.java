@@ -220,8 +220,6 @@ public class BoardEditText extends ScrollingImageView {
 				.toUpperCase(((this.configuration.hardKeyboardHidden == Configuration.HARDKEYBOARDHIDDEN_NO) || this.useNativeKeyboard) ? event
 						.getDisplayLabel() : ((char) keyCode));
 
-        Log.d("ShortyzApplication", "got char " + c);
-
 		if (boxes != null && ALPHA.indexOf(c) != -1) {
             c = filterReplacement(c, selection);
 

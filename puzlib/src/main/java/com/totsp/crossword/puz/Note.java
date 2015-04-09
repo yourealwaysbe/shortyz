@@ -3,18 +3,27 @@ package com.totsp.crossword.puz;
 import java.io.Serializable;
 
 public class Note implements Serializable {
+    private String scratch;
     private String text;
     private String anagramSource;
     private String anagramSolution;
 
-    public Note(String text, String anagramSource, String anagramSolution) {
+    public Note(String scratch,
+                String text,
+                String anagramSource,
+                String anagramSolution) {
         this.text = text;
+        this.scratch = scratch;
         this.anagramSource = anagramSource;
         this.anagramSolution = anagramSolution;
     }
 
     public String getText() {
         return text;
+    }
+
+    public String getSratch() {
+        return scratch;
     }
 
     public String getAnagramSource() {
@@ -29,6 +38,10 @@ public class Note implements Serializable {
         this.text = text;
     }
 
+    public void setScratch(String scratch) {
+        this.scratch = scratch;
+    }
+
     public void setAnagramSource(String anagramSource) {
         this.anagramSource = anagramSource;
     }
@@ -39,8 +52,9 @@ public class Note implements Serializable {
 
     public boolean isEmpty() {
         return (text == null || text.length() == 0) &&
-               (anagramSource == null || anagramSource.length() == 0) &&
-               (anagramSolution == null || anagramSolution.length() == 0);
+               (scratch == null || scratch.trim().length() == 0) &&
+               (anagramSource == null || anagramSource.trim().length() == 0) &&
+               (anagramSolution == null || anagramSolution.trim().length() == 0);
     }
 
     @Override
@@ -48,6 +62,7 @@ public class Note implements Serializable {
         if (o instanceof Note) {
             Note n = (Note) o;
             return safeStringEquals(this.text, n.text) &&
+                   safeStringEquals(this.scratch, n.scratch) &&
                    safeStringEquals(this.anagramSource, n.anagramSource) &&
                    safeStringEquals(this.anagramSolution, n.anagramSolution);
         }
@@ -60,6 +75,8 @@ public class Note implements Serializable {
         int result = 1;
 
         result = (prime * result) + (text == null ? 0 : text.hashCode());
+        result = (prime * result) +
+                 (scratch == null ? 0 : scratch.hashCode());
         result = (prime * result) +
                  (anagramSource == null ? 0 : anagramSource.hashCode());
         result = (prime * result) +

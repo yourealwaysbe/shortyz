@@ -150,16 +150,19 @@ public class NotesActivity extends ShortyzKeyboardActivity {
 			}
 		};
 
-		scratchView = (BoardEditText) this.findViewById(R.id.scratchMiniboard);
-        scratchView.setLength(curWordLen);
-		scratchView.setContextMenuListener(kbdRenderClickListener);
-
-		Puzzle puz = BOARD.getPuzzle();
+        Puzzle puz = BOARD.getPuzzle();
         Note note = puz.getNote(c.number, BOARD.isAcross());
         if (note != null) {
             EditText notesBox = (EditText) this.findViewById(R.id.notesBox);
             notesBox.setText(note.getText());
         }
+
+		scratchView = (BoardEditText) this.findViewById(R.id.scratchMiniboard);
+        if (note != null) {
+            scratchView.setFromString(note.getSratch());
+        }
+        scratchView.setLength(curWordLen);
+		scratchView.setContextMenuListener(kbdRenderClickListener);
 
         anagramSourceView = (BoardEditText) this.findViewById(R.id.anagramSource);
         if (note != null) {
@@ -265,10 +268,11 @@ public class NotesActivity extends ShortyzKeyboardActivity {
         EditText notesBox = (EditText) this.findViewById(R.id.notesBox);
         String text = notesBox.getText().toString();
 
+        String scratch = scratchView.toString();
         String anagramSource = anagramSourceView.toString();
         String anagramSolution = anagramSolView.toString();
 
-        Note note = new Note(text, anagramSource, anagramSolution);
+        Note note = new Note(scratch, text, anagramSource, anagramSolution);
 
         Clue c = BOARD.getClue();
 		Puzzle puz = BOARD.getPuzzle();
