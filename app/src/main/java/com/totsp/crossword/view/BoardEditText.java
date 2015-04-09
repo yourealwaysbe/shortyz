@@ -156,8 +156,9 @@ public class BoardEditText extends ScrollingImageView {
                        selection.across < boxes.length - 1) {
                     selection.across++;
                 }
-				this.render();
             }
+
+            this.render();
 
             return true;
 		}
