@@ -16,11 +16,19 @@
 		android:background="#2C2C2C"
 	/>
 
+    <TextView 
+        android:id="@+id/boardLab"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/board_lab"
+        android:layout_below="@+id/clueLine"
+    />
+
     <com.totsp.crossword.view.ScrollingImageView
         android:id="@+id/miniboard"
         android:layout_width="fill_parent"
         android:layout_height="40dp"
-        android:layout_below="@+id/clueLine"
+        android:layout_below="@+id/boardLab"
         android:focusable="true" 
         android:focusableInTouchMode="true" >
         <requestFocus />
@@ -39,6 +47,30 @@
             android:layout_height="fill_parent"
             android:orientation="vertical" >
              
+            <TextView 
+                android:id="@+id/scratchLab"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/scratch_lab" 
+                android:inputType="text"
+            />
+
+            <com.totsp.crossword.view.ScrollingImageView
+                android:id="@+id/scratchMiniboard"
+                android:layout_width="fill_parent"
+                android:layout_height="40dp"
+                android:layout_below="@+id/scratchLab"
+                android:focusable="true" 
+                android:focusableInTouchMode="true" 
+            />
+
+            <TextView 
+                android:id="@+id/notesLab"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/notes_lab" 
+            />
+
             <EditText 
                 android:id="@+id/notesBox"
                 android:layout_width="fill_parent"
@@ -62,7 +94,6 @@
                 android:layout_height="wrap_content"
                 android:layout_below="@+id/anagramSourceLab"
                 android:gravity="top"
-                android:inputType="text|textNoSuggestions|textFilter|textVisiblePassword|textCapCharacters"
                 android:typeface="monospace"
             />
 
@@ -80,7 +111,6 @@
                 android:layout_height="wrap_content"
                 android:layout_below="@+id/anagramSolutionLab"
                 android:gravity="top"
-                android:inputType="text|textNoSuggestions|textFilter|textVisiblePassword|textCapCharacters"
                 android:typeface="monospace"
             />
         
