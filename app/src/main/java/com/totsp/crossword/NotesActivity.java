@@ -35,6 +35,7 @@ import com.totsp.crossword.shortyz.R;
 import com.totsp.crossword.puz.Playboard.Clue;
 import com.totsp.crossword.puz.Puzzle;
 import com.totsp.crossword.puz.Note;
+import com.totsp.crossword.view.BoardEditText;
 import com.totsp.crossword.view.ScrollingImageView;
 import com.totsp.crossword.view.ScrollingImageView.ClickListener;
 import com.totsp.crossword.puz.Playboard.Word;
@@ -51,9 +52,7 @@ public class NotesActivity extends ShortyzKeyboardActivity {
 
     private ScrollingImageView imageView;
 
-    private ScrollingImageView scratchView;
-    private Position scratchSelection = new Position(-1, 0);
-    private Box[] scratchBoxes;
+    private BoardEditText scratchView;
 
 	private ImaginaryTimer timer;
 	private File baseFile;
@@ -148,37 +147,8 @@ public class NotesActivity extends ShortyzKeyboardActivity {
 			}
 		});
 
-        scratchBoxes = new Box[curWordLen];
-        for (int i = 0; i < curWordLen; ++i) {
-            scratchBoxes[i] = new Box();
-        }
-
-		scratchView = (ScrollingImageView) this.findViewById(R.id.scratchMiniboard);
-		scratchView.setContextMenuListener(new ClickListener() {
-			public void onContextMenu(Point e) {
-				// TODO Auto-generated method stub
-			}
-
-			public void onTap(Point e) {
-                scratchView.requestFocus();
-
-				Word current = BOARD.getCurrentWord();
-				int box = RENDERER.findBoxNoScale(e);
-                if (box < current.length) {
-                    scratchSelection.across = box;
-				}
-                NotesActivity.this.render();
-			}
-		});
-        scratchView.setOnFocusChangeListener(new OnFocusChangeListener() {
-            @Override
-            public void onFocusChange(View v, boolean gainFocus) {
-                if (!gainFocus) {
-                    scratchSelection.across = -1;
-                    NotesActivity.this.render();
-                }
-            }
-        });
+		scratchView = (BoardEditText) this.findViewById(R.id.scratchMiniboard);
+        scratchView.setLength(curWordLen);
 
 		Puzzle puz = BOARD.getPuzzle();
         Note note = puz.getNote(c.number, BOARD.isAcross());
@@ -343,7 +313,7 @@ public class NotesActivity extends ShortyzKeyboardActivity {
             return onMiniboardKeyUp(keyCode, event);
 
         case R.id.scratchMiniboard:
-            return onScratchKeyUp(keyCode, event);
+            return scratchView.onKeyUp(keyCode, event);
 
         default:
             return false;
@@ -444,80 +414,10 @@ public class NotesActivity extends ShortyzKeyboardActivity {
 		return super.onKeyUp(keyCode, event);
 	}
 
-    private boolean onScratchKeyUp(int keyCode, KeyEvent event) {
-		switch (keyCode) {
-		case KeyEvent.KEYCODE_MENU:
-			return false;
-
-        case KeyEvent.KEYCODE_DPAD_LEFT:
-			if (scratchSelection.across > 0) {
-				scratchSelection.across--;
-				this.render();
-			}
-			return true;
-
-		case KeyEvent.KEYCODE_DPAD_RIGHT:
-			if (scratchSelection.across < scratchBoxes.length - 1) {
-				scratchSelection.across++;
-				this.render();
-			}
-
-			return true;
-
-		case KeyEvent.KEYCODE_DEL:
-            scratchBoxes[scratchSelection.across].setResponse(' ');
-            if (scratchSelection.across > 0) {
-                scratchSelection.across--;
-                this.render();
-            }
-            return true;
-
-		case KeyEvent.KEYCODE_SPACE:
-            scratchBoxes[scratchSelection.across].setResponse(' ');
-
-            if (scratchSelection.across < scratchBoxes.length - 1) {
-                scratchSelection.across++;
-
-                while (BOARD.isSkipCompletedLetters() &&
-                       scratchBoxes[scratchSelection.across].getResponse() != ' ' &&
-                       scratchSelection.across < scratchBoxes.length - 1) {
-                    scratchSelection.across++;
-                }
-				this.render();
-            }
-            return true;
-        }
-
-		char c = Character
-				.toUpperCase(((this.configuration.hardKeyboardHidden == Configuration.HARDKEYBOARDHIDDEN_NO) || this.useNativeKeyboard) ? event
-						.getDisplayLabel() : ((char) keyCode));
-
-		if (PlayActivity.ALPHA.indexOf(c) != -1) {
-			scratchBoxes[scratchSelection.across].setResponse(c);
-
-            if (scratchSelection.across < scratchBoxes.length - 1) {
-                scratchSelection.across++;
-
-                while (BOARD.isSkipCompletedLetters() &&
-                       scratchBoxes[scratchSelection.across].getResponse() != ' ' &&
-                       scratchSelection.across < scratchBoxes.length - 1) {
-                    scratchSelection.across++;
-                }
-				this.render();
-            }
-
-            return true;
-		}
-
-		return super.onKeyUp(keyCode, event);
-	}
-
 
     private void render() {
         renderKeyboard();
 		this.imageView.setBitmap(RENDERER.drawWord());
-        this.scratchView.setBitmap(RENDERER.drawBoxes(scratchBoxes,
-                                                      scratchSelection));
 	}
 
     private static final boolean isAnagramSolutionSpecialChar(char c) {

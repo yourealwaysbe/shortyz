@@ -55,7 +55,7 @@
                 android:inputType="text"
             />
 
-            <com.totsp.crossword.view.ScrollingImageView
+            <com.totsp.crossword.view.BoardEditText
                 android:id="@+id/scratchMiniboard"
                 android:layout_width="fill_parent"
                 android:layout_height="40dp"
