@@ -260,6 +260,14 @@ public class NotesActivity extends ShortyzKeyboardActivity {
                             return newChar;
                         }
                     }
+                    // if failed to find it in the source view, see if we can
+                    // find one to swap it with one in the solution
+                    for (int i = 0; i < curWordLen; i++) {
+                        if (anagramSolView.getResponse(i) == newChar) {
+                            anagramSolView.setResponse(i, oldChar);
+                            return newChar;
+                        }
+                    }
                 }
                 return '\0';
             }
