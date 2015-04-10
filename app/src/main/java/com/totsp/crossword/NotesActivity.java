@@ -23,6 +23,8 @@ import android.content.res.Configuration;
 import android.widget.Toast;
 import android.view.inputmethod.InputMethodManager;
 import android.content.Context;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 
 import com.totsp.crossword.io.IO;
 import com.totsp.crossword.shortyz.R;
@@ -144,16 +146,6 @@ public class NotesActivity extends ShortyzKeyboardActivity {
 			}
 		});
 
-        ClickListener kbdRenderClickListener = new ClickListener() {
-			public void onContextMenu(Point e) {
-				// TODO Auto-generated method stub
-			}
-
-			public void onTap(Point e) {
-                NotesActivity.this.render();
-			}
-		};
-
         Puzzle puz = BOARD.getPuzzle();
         Note note = puz.getNote(c.number, BOARD.isAcross());
         if (note != null) {
@@ -166,7 +158,15 @@ public class NotesActivity extends ShortyzKeyboardActivity {
             scratchView.setFromString(note.getSratch());
         }
         scratchView.setLength(curWordLen);
-		scratchView.setContextMenuListener(kbdRenderClickListener);
+		scratchView.setContextMenuListener(new ClickListener() {
+			public void onContextMenu(Point e) {
+				copyBoardViewToBoard(scratchView);
+			}
+
+			public void onTap(Point e) {
+                NotesActivity.this.render();
+			}
+        });
 
         anagramSourceView = (BoardEditText) this.findViewById(R.id.anagramSource);
         if (note != null) {
@@ -275,7 +275,16 @@ public class NotesActivity extends ShortyzKeyboardActivity {
 
         anagramSolView.setLength(curWordLen);
         anagramSolView.setFilters(new BoardEditFilter[]{solFilter});
-		anagramSolView.setContextMenuListener(kbdRenderClickListener);
+		anagramSolView.setContextMenuListener(new ClickListener() {
+			public void onContextMenu(Point e) {
+				copyBoardViewToBoard(anagramSolView);
+			}
+
+			public void onTap(Point e) {
+                NotesActivity.this.render();
+			}
+        });
+
 
         // if not using native keyboard, hide shortyz' when the notesBox is in
         // focus
@@ -433,9 +442,9 @@ public class NotesActivity extends ShortyzKeyboardActivity {
 						.getDisplayLabel() : ((char) keyCode));
 
 		if (PlayActivity.ALPHA.indexOf(c) != -1) {
-			BOARD.playLetter(c);
+            BOARD.playLetter(c);
 
-			Position p = BOARD.getHighlightLetter();
+            Position p = BOARD.getHighlightLetter();
 
 			if (!BOARD.getCurrentWord().equals(w)
 					|| (BOARD.getBoxes()[p.across][p.down] == null)) {
@@ -444,27 +453,81 @@ public class NotesActivity extends ShortyzKeyboardActivity {
 
 			this.render();
 
-            Puzzle puz = BOARD.getPuzzle();
-			if ((puz.getPercentComplete() == 100) && (timer != null)) {
-	            timer.stop();
-	            puz.setTime(timer.getElapsed());
-	            this.timer = null;
-	            Intent i = new Intent(NotesActivity.this, PuzzleFinishedActivity.class);
-	            this.startActivity(i);
+            afterPlay();
 
-	        }
-
-			return true;
+            return true;
 		}
 
 		return super.onKeyUp(keyCode, event);
 	}
 
+    private void afterPlay() {
+        Puzzle puz = BOARD.getPuzzle();
+        if ((puz.getPercentComplete() == 100) && (timer != null)) {
+            timer.stop();
+            puz.setTime(timer.getElapsed());
+            this.timer = null;
+            Intent i = new Intent(NotesActivity.this, PuzzleFinishedActivity.class);
+            this.startActivity(i);
+        }
+    }
 
     private void render() {
         renderKeyboard();
 		this.imageView.setBitmap(RENDERER.drawWord());
 	}
+
+    private void copyBoardViewToBoard(final BoardEditText view) {
+        final Box[] curWordBoxes = BOARD.getCurrentWordBoxes();
+        boolean conflicts = false;
+
+        for (int i = 0; i < curWordBoxes.length; i++) {
+            char oldResponse = curWordBoxes[i].getResponse();
+            if (Character.isLetter(oldResponse) &&
+                view.getResponse(i) != oldResponse) {
+
+                conflicts = true;
+                break;
+            }
+        }
+
+        if (conflicts) {
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+
+            builder.setTitle("Copy Conflict");
+            builder.setMessage("The new solution conflicts with existing entries.  Overwrite anyway?");
+            builder.setPositiveButton("YES",
+                                      new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    copyBoardViewToBoardUnchecked(view, curWordBoxes);
+                    dialog.dismiss();
+                }
+            });
+            builder.setNegativeButton("NO",
+                                      new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    dialog.dismiss();
+                }
+            });
+
+            AlertDialog alert = builder.create();
+            alert.show();
+        } else {
+            copyBoardViewToBoardUnchecked(view, curWordBoxes);
+        }
+    }
+
+    private void copyBoardViewToBoardUnchecked(BoardEditText view,
+                                               Box[] curWordBoxes) {
+        for (int i = 0; i < curWordBoxes.length; i++) {
+            curWordBoxes[i].setResponse(view.getResponse(i));
+        }
+
+        render();
+        afterPlay();
+    }
 
     private static final boolean isAnagramSolutionSpecialChar(char c) {
         switch (c) {
@@ -485,4 +548,5 @@ public class NotesActivity extends ShortyzKeyboardActivity {
             return false;
         }
     }
+
 }
