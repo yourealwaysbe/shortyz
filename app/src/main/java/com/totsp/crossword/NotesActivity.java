@@ -66,10 +66,12 @@ public class NotesActivity extends ShortyzKeyboardActivity {
 			Toast.makeText(this, "Unable to read device configuration.",
 					Toast.LENGTH_LONG).show();
 			finish();
+            return;
 		}
 
         if(BOARD == null || BOARD.getPuzzle() == null){
             finish();
+            return;
         }
 
         timer = new ImaginaryTimer(BOARD.getPuzzle().getTime());

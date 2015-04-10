@@ -72,9 +72,11 @@ public class ClueListActivity extends ShortyzKeyboardActivity {
 			Toast.makeText(this, "Unable to read device configuration.",
 					Toast.LENGTH_LONG).show();
 			finish();
+            return;
 		}
         if(ShortyzApplication.BOARD == null || ShortyzApplication.BOARD.getPuzzle() == null){
             finish();
+            return;
         }
 		this.timer = new ImaginaryTimer(ShortyzApplication.BOARD.getPuzzle()
 				.getTime());
