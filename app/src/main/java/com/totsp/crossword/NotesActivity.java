@@ -528,25 +528,4 @@ public class NotesActivity extends ShortyzKeyboardActivity {
         render();
         afterPlay();
     }
-
-    private static final boolean isAnagramSolutionSpecialChar(char c) {
-        switch (c) {
-        case ' ':
-        case '-':
-        case '*':
-        case ',':
-        case '.':
-        case '_':
-        case '?':
-        case '+':
-        case '!':
-        case '#':
-        case '@':
-        case '$':
-            return true;
-        default:
-            return false;
-        }
-    }
-
 }
