@@ -201,10 +201,15 @@ public class NotesActivity extends ShortyzKeyboardActivity {
             }
 
             public char filter(char oldChar, char newChar, int pos) {
-                if (numAnagramLetters < curWordLen &&
-                    Character.isLetter(newChar)) {
+                if (Character.isLetter(newChar)) {
+                    if (Character.isLetter(oldChar)) {
+                        return newChar;
+                    } else if (numAnagramLetters < curWordLen) {
                         numAnagramLetters++;
                         return newChar;
+                    } else {
+                        return '\0';
+                    }
                 } else {
                     return '\0';
                 }
