@@ -130,6 +130,10 @@ public class BoardEditText extends ScrollingImageView {
         }
     }
 
+    public int getLength() {
+        return (boxes == null) ? 0 : boxes.length;
+    }
+
     public char getResponse(int pos) {
         if (boxes != null && 0 <= pos && pos < boxes.length) {
             return boxes[pos].getResponse();

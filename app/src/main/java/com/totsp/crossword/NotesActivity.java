@@ -5,6 +5,7 @@ import static com.totsp.crossword.shortyz.ShortyzApplication.RENDERER;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Random;
 
 import android.os.Bundle;
 import android.net.Uri;
@@ -47,6 +48,7 @@ public class NotesActivity extends ShortyzKeyboardActivity {
 
 	private ImaginaryTimer timer;
 	private File baseFile;
+    private Random rand = new Random();
 
     private int numAnagramLetters = 0;
 
@@ -211,7 +213,24 @@ public class NotesActivity extends ShortyzKeyboardActivity {
 
         anagramSourceView.setLength(curWordLen);
         anagramSourceView.setFilters(new BoardEditFilter[]{sourceFilter});
-		anagramSourceView.setContextMenuListener(kbdRenderClickListener);
+		anagramSourceView.setContextMenuListener(new ClickListener() {
+			public void onContextMenu(Point e) {
+                // reshuffle squares
+                int len = anagramSourceView.getLength();
+                for (int i = 0; i < len; i++) {
+                    int j = rand.nextInt(len);
+                    char ci = anagramSourceView.getResponse(i);
+                    char cj = anagramSourceView.getResponse(j);
+                    anagramSourceView.setResponse(i, cj);
+                    anagramSourceView.setResponse(j, ci);
+                }
+                NotesActivity.this.render();
+			}
+
+			public void onTap(Point e) {
+                NotesActivity.this.render();
+			}
+        });
 
         BoardEditFilter solFilter = new BoardEditFilter() {
             public boolean delete(char oldChar, int pos) {
