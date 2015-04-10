@@ -83,6 +83,11 @@ public class BoardEditText extends ScrollingImageView {
                 if (!gainFocus) {
                     selection.across = -1;
                     BoardEditText.this.render();
+                } else if (boxes != null &&
+                           (selection.across < 0 ||
+                            selection.across >= boxes.length)) {
+                    selection.across = 0;
+                    BoardEditText.this.render();
                 }
             }
         });
@@ -253,6 +258,9 @@ public class BoardEditText extends ScrollingImageView {
         if (filters == null)
             return true;
 
+        if (boxes == null || pos.across < 0 || pos.across >= boxes.length)
+            return false;
+
         char oldChar = boxes[pos.across].getResponse();
 
         for (BoardEditFilter filter : filters) {
@@ -267,6 +275,9 @@ public class BoardEditText extends ScrollingImageView {
     private char filterReplacement(char newChar, Position pos) {
         if (filters == null)
             return newChar;
+
+        if (boxes == null || pos.across < 0 || pos.across >= boxes.length)
+            return '\0';
 
         char oldChar = boxes[pos.across].getResponse();
 
