@@ -131,7 +131,7 @@ public class BoardEditText extends ScrollingImageView {
     }
 
     public char getResponse(int pos) {
-        if (0 <= pos && pos < boxes.length) {
+        if (boxes != null && 0 <= pos && pos < boxes.length) {
             return boxes[pos].getResponse();
         } else {
             return '\0';
@@ -139,7 +139,7 @@ public class BoardEditText extends ScrollingImageView {
     }
 
     public void setResponse(int pos, char c) {
-        if (0 <= pos && pos < boxes.length) {
+        if (boxes != null && 0 <= pos && pos < boxes.length) {
             boxes[pos].setResponse(c);
             render();
         }
