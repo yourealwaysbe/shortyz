@@ -212,12 +212,6 @@ public class BoardEditText extends ScrollingImageView {
 
                 if (selection.across < boxes.length - 1) {
                     selection.across++;
-
-                    while (BOARD.isSkipCompletedLetters() &&
-                           boxes[selection.across].getResponse() != ' ' &&
-                           selection.across < boxes.length - 1) {
-                        selection.across++;
-                    }
                 }
 
                 this.render();
@@ -237,12 +231,6 @@ public class BoardEditText extends ScrollingImageView {
 
                 if (selection.across < boxes.length - 1) {
                     selection.across++;
-
-                    while (BOARD.isSkipCompletedLetters() &&
-                           boxes[selection.across].getResponse() != ' ' &&
-                           selection.across < boxes.length - 1) {
-                        selection.across++;
-                    }
                 }
 
                 this.render();
