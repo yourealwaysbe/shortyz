@@ -35,14 +35,11 @@ import com.totsp.crossword.view.ScrollingImageView;
 import com.totsp.crossword.view.ScrollingImageView.ClickListener;
 import com.totsp.crossword.view.ScrollingImageView.Point;
 
-public class ClueListActivity extends ShortyzActivity {
+public class ClueListActivity extends InGameActivity {
 	private Configuration configuration;
-	private File baseFile;
-	private ImaginaryTimer timer;
 	private KeyboardView keyboardView = null;
 	private ListView across;
 	private ListView down;
-	private Puzzle puz;
 	private ScrollingImageView imageView;
 	private TabHost tabHost;
 	private boolean useNativeKeyboard = false;
@@ -79,6 +76,12 @@ public class ClueListActivity extends ShortyzActivity {
     @Override
 	public void onCreate(Bundle icicle) {
 		super.onCreate(icicle);
+        if (puz == null) {
+			Toast.makeText(this, "fubar",
+					Toast.LENGTH_LONG).show();
+            return;
+        }
+
 		utils.holographic(this);
 		utils.finishOnHomeButton(this);
 		try {
@@ -92,20 +95,8 @@ public class ClueListActivity extends ShortyzActivity {
         if(ShortyzApplication.BOARD == null || ShortyzApplication.BOARD.getPuzzle() == null){
             finish();
         }
-		this.timer = new ImaginaryTimer(ShortyzApplication.BOARD.getPuzzle()
-				.getTime());
 
-		Uri u = this.getIntent().getData();
-
-		if (u != null) {
-			if (u.getScheme().equals("file")) {
-				baseFile = new File(u.getPath());
-			}
-		}
-
-		puz = ShortyzApplication.BOARD.getPuzzle();
-		timer.start();
-		setContentView(R.layout.clue_list);
+        setContentView(R.layout.clue_list);
 
 		int keyboardType = "CONDENSED_ARROWS".equals(prefs.getString(
 				"keyboardType", "")) ? R.xml.keyboard_dpad : R.xml.keyboard;
@@ -396,10 +387,8 @@ public class ClueListActivity extends ShortyzActivity {
 
 			this.render();
 
-			if ((puz.getPercentComplete() == 100) && (timer != null)) {
-	            timer.stop();
-	            puz.setTime(timer.getElapsed());
-	            this.timer = null;
+			if ((puz.getPercentComplete() == 100)) {
+                stopTimer();
 	            Intent i = new Intent(ClueListActivity.this, PuzzleFinishedActivity.class);
 	            this.startActivity(i);
 
@@ -425,31 +414,18 @@ public class ClueListActivity extends ShortyzActivity {
 
 	@Override
 	protected void onPause() {
-		super.onPause();
+        super.onPause();
 
-		try {
-			if ((puz != null) && (baseFile != null)) {
-				if ((timer != null) && (puz.getPercentComplete() != 100)) {
-					this.timer.stop();
-					puz.setTime(timer.getElapsed());
-					this.timer = null;
-				}
-
-				IO.save(puz, baseFile);
-			}
-		} catch (IOException ioe) {
-			ioe.printStackTrace();
-		}
-
-		if (this.prefs.getBoolean("forceKeyboard", false)
+        if (this.prefs.getBoolean("forceKeyboard", false)
 				|| (this.configuration.hardKeyboardHidden == Configuration.HARDKEYBOARDHIDDEN_YES)
 				|| (this.configuration.hardKeyboardHidden == Configuration.HARDKEYBOARDHIDDEN_UNDEFINED)) {
 			InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
 			imm.hideSoftInputFromWindow(this.imageView.getWindowToken(), 0);
 		}
+
 	}
 
-	private void render() {
+	protected void render() {
 		if (this.prefs.getBoolean("forceKeyboard", false)
 				|| (this.configuration.hardKeyboardHidden == Configuration.HARDKEYBOARDHIDDEN_YES)
 				|| (this.configuration.hardKeyboardHidden == Configuration.HARDKEYBOARDHIDDEN_UNDEFINED)) {
