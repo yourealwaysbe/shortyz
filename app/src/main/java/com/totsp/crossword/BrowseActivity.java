@@ -202,7 +202,6 @@ public class BrowseActivity extends ShortyzActivity implements OnItemClickListen
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        super.onCreateOptionsMenu(menu);
         System.setProperty("http.keepAlive", "false");
         utils.onActionBarWithoutText(this.gamesItem = menu.add("Sign In")
                 .setIcon(this.playIcon));
@@ -220,12 +219,8 @@ public class BrowseActivity extends ShortyzActivity implements OnItemClickListen
             .setIcon(android.R.drawable.ic_menu_manage);
         menu.add(MENU_ARCHIVES)
             .setIcon(android.R.drawable.ic_menu_view);
-        menu.add("Help")
-            .setIcon(android.R.drawable.ic_menu_help);
-        menu.add("Settings")
-            .setIcon(android.R.drawable.ic_menu_preferences);
 
-        return true;
+        return super.onCreateOptionsMenu(menu);
     }
 
     public void onSignInSucceeded(){
@@ -278,7 +273,7 @@ public class BrowseActivity extends ShortyzActivity implements OnItemClickListen
     @SuppressWarnings("deprecation")
 	@Override
     public boolean onOptionsItemSelected(MenuItem item) {
-    	if(item.getTitle().equals("Sign In")){
+	if(item.getTitle().equals("Sign In")){
             if(this.signedIn){
                 System.out.println("Shwoing achievements.");
                 startActivityForResult(this.mHelper.getGamesClient().getAchievementsIntent(), 0);
@@ -287,15 +282,9 @@ public class BrowseActivity extends ShortyzActivity implements OnItemClickListen
                 this.startActivity(i);
                 return true;
             }
-    	} else if (item.getTitle()
+	} else if (item.getTitle()
                     .equals("Download")) {
-        	showDialog(DOWNLOAD_DIALOG_ID);
-
-            return true;
-        } else if (item.getTitle()
-                           .equals("Settings")) {
-            Intent i = new Intent(this, PreferencesActivity.class);
-            this.startActivity(i);
+	showDialog(DOWNLOAD_DIALOG_ID);
 
             return true;
         } else if (item.getTitle()
@@ -316,11 +305,6 @@ public class BrowseActivity extends ShortyzActivity implements OnItemClickListen
             this.cleanup();
 
             return true;
-        } else if (item.getTitle()
-                           .equals("Help")) {
-            Intent i = new Intent(Intent.ACTION_VIEW, Uri.parse("file:///android_asset/filescreen.html"), this,
-                    HTMLActivity.class);
-            this.startActivity(i);
         } else if (item.getTitle()
                            .equals("By Source")) {
             this.accessor = Accessor.SOURCE;
@@ -343,12 +327,13 @@ public class BrowseActivity extends ShortyzActivity implements OnItemClickListen
                  .commit();
             this.render();
         } else if("Send Debug Package".equals(item.getTitle())){
-        	Intent i = ShortyzApplication.sendDebug();
-        	if(i != null)
-        		this.startActivity(i);
+	Intent i = ShortyzApplication.sendDebug();
+	if(i != null)
+		this.startActivity(i);
+            return true;
         }
 
-        return false;
+        return super.onOptionsItemSelected(item);
     }
 
     @Override
@@ -568,7 +553,7 @@ public class BrowseActivity extends ShortyzActivity implements OnItemClickListen
             showSDCardHelp();
             return  new SeparatedListAdapter(this);
         }
-        
+
 
         String sourceMatch = null;
 
@@ -651,9 +636,9 @@ public class BrowseActivity extends ShortyzActivity implements OnItemClickListen
             this.sourceList.addAll(sourcesTemp);
             Collections.sort(this.sourceList);
             this.handler.post(new Runnable(){
-            	public void run(){
-            		((SourceListAdapter) sources.getAdapter()).notifyDataSetInvalidated();
-            	}
+	public void run(){
+		((SourceListAdapter) sources.getAdapter()).notifyDataSetInvalidated();
+	}
             });
         }
 
@@ -761,7 +746,7 @@ public class BrowseActivity extends ShortyzActivity implements OnItemClickListen
                 public void run() {
                     Downloaders dls = new Downloaders(prefs, nm, BrowseActivity.this);
                     dls.supressMessages(true);
-                    
+
                     Scrapers scrapes = new Scrapers(prefs, nm, BrowseActivity.this);
                     scrapes.supressMessages(true);
                     scrapes.scrape();

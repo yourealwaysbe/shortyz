@@ -395,14 +395,14 @@ public class ClueListActivity extends ShortyzActivity {
 			}
 
 			this.render();
-			
+
 			if ((puz.getPercentComplete() == 100) && (timer != null)) {
 	            timer.stop();
 	            puz.setTime(timer.getElapsed());
 	            this.timer = null;
 	            Intent i = new Intent(ClueListActivity.this, PuzzleFinishedActivity.class);
 	            this.startActivity(i);
-	            
+
 	        }
 
 			return true;

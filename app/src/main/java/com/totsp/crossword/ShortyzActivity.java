@@ -15,6 +15,8 @@ import android.os.Environment;
 import android.os.StatFs;
 import android.preference.PreferenceManager;
 import android.util.DisplayMetrics;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.widget.Toast;
 
 import com.totsp.crossword.versions.AndroidVersionUtils;
@@ -60,6 +62,31 @@ public class ShortyzActivity extends BaseGameActivity {
 		}
 		doOrientation();
 	}
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        menu.add("Help").setIcon(android.R.drawable.ic_menu_help);
+        menu.add("Settings").setIcon(android.R.drawable.ic_menu_preferences);
+        return true;
+    }
+
+    @SuppressWarnings("deprecation")
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getTitle().toString().equals("Help")) {
+            Intent i = new Intent(Intent.ACTION_VIEW,
+                    Uri.parse("file:///android_asset/playscreen.html"), this,
+                    HTMLActivity.class);
+            this.startActivity(i);
+            return true;
+        } else if (item.getTitle().toString().equals("Settings")) {
+            Intent i = new Intent(this, PreferencesActivity.class);
+            this.startActivity(i);
+
+            return true;
+        }
+        return false;
+    }
 
 	protected void showSDCardFull() {
 		Intent i = new Intent(Intent.ACTION_VIEW,

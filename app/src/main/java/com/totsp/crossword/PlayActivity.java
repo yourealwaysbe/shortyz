@@ -620,7 +620,7 @@ public class PlayActivity extends ShortyzActivity {
 
         this.setClueSize(prefs.getInt("clueSize", 12));
         setTitle("Shortyz - " + puz.getTitle() + " - " + puz.getAuthor()
-                + " - 	" + puz.getCopyright());
+                + " -	" + puz.getCopyright());
         this.showCount = prefs.getBoolean("showCount", false);
         if (this.prefs.getBoolean("fitToScreen", false) || (android.os.Build.VERSION.SDK_INT > 11 && ShortyzApplication.isLandscape(metrics)) && (ShortyzApplication.isTabletish(metrics) || ShortyzApplication.isMiniTabletish(metrics))) {
             this.handler.postDelayed(new Runnable() {
@@ -707,10 +707,8 @@ public class PlayActivity extends ShortyzActivity {
         zoom.add(createSpannableForMenu("Fit to Screen")).setTitleCondensed("Fit to Screen");
         zoom.add(createSpannableForMenu("Zoom Reset")).setTitleCondensed("Zoom Reset");
         menu.add("Info").setIcon(android.R.drawable.ic_menu_info_details);
-        menu.add("Help").setIcon(android.R.drawable.ic_menu_help);
-        menu.add("Settings").setIcon(android.R.drawable.ic_menu_preferences);
 
-        return true;
+        return super.onCreateOptionsMenu(menu);
     }
 
     private SpannableString createSpannableForMenu(String value){
@@ -897,11 +895,6 @@ public class PlayActivity extends ShortyzActivity {
             this.render();
 
             return true;
-        } else if (item.getTitle().toString().equals("Settings")) {
-            Intent i = new Intent(this, PreferencesActivity.class);
-            this.startActivity(i);
-
-            return true;
         } else if (item.getTitle().toString().equals("Zoom In")) {
             this.boardView.scrollTo(0, 0);
 
@@ -975,11 +968,6 @@ public class PlayActivity extends ShortyzActivity {
             PlayActivity.this.startActivityForResult(i, 0);
 
             return true;
-        } else if (item.getTitle().toString().equals("Help")) {
-            Intent i = new Intent(Intent.ACTION_VIEW,
-                    Uri.parse("file:///android_asset/playscreen.html"), this,
-                    HTMLActivity.class);
-            this.startActivity(i);
         } else if (item.getTitle().toString().equals("Small")) {
             this.setClueSize(12);
         } else if (item.getTitle().toString().equals("Medium")) {
@@ -988,7 +976,7 @@ public class PlayActivity extends ShortyzActivity {
             this.setClueSize(16);
         }
 
-        return false;
+        return super.onOptionsItemSelected(item);
     }
 
 
