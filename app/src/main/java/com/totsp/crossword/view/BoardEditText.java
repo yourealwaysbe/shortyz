@@ -231,6 +231,17 @@ public class BoardEditText extends ScrollingImageView {
 
                 if (selection.across < boxes.length - 1) {
                     selection.across++;
+
+                    int nextPos = selection.across;
+
+                    while (BOARD.isSkipCompletedLetters() &&
+                           boxes[selection.across].getResponse() != ' ' &&
+                           selection.across < boxes.length - 1) {
+                        selection.across++;
+                    }
+
+                    if (boxes[selection.across].getResponse() != ' ')
+                        selection.across = nextPos;
                 }
 
                 this.render();

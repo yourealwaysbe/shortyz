@@ -17,10 +17,7 @@ android {
     }
     signingConfigs {
         debug {
-            storeFile file("/Users/rcooper/androidkeystore")
-            storePassword "gt0327a"
-            keyAlias "robert \"kebernet\" cooper"
-            keyPassword "gt0327a"
+            storeFile file("/home/matt/.android/debug.keystore")
 
         }
 
