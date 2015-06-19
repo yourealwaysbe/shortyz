@@ -418,25 +418,6 @@ public class NotesActivity extends InGameActivity {
 		return super.onKeyUp(keyCode, event);
 	}
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        menu.add("Clues").setIcon(android.R.drawable.ic_menu_agenda);
-        return super.onCreateOptionsMenu(menu);
-    }
-
-    @SuppressWarnings("deprecation")
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getTitle().toString().equals("Clues")) {
-            Intent i = new Intent(NotesActivity.this, ClueListActivity.class);
-            i.setData(Uri.fromFile(baseFile));
-            NotesActivity.this.startActivityForResult(i, 0);
-
-            return true;
-        }
-        return super.onOptionsItemSelected(item);
-    }
-
     private void afterPlay() {
         if (puz.getPercentComplete() == 100) {
             stopTimer();
