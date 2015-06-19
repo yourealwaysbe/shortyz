@@ -74,12 +74,17 @@ public abstract class InGameActivity extends ShortyzActivity {
             if (BOARD != null)
                 puz = BOARD.getPuzzle();
 
-            if (puz == null) {
-                Uri u = this.getIntent().getData();
+            Uri u = this.getIntent().getData();
 
+            if (u != null) {
+                if (u.getScheme().equals("file")) {
+                    baseFile = new File(u.getPath());
+                }
+            }
+
+            if (puz == null) {
                 if (u != null) {
                     if (u.getScheme().equals("file")) {
-                        baseFile = new File(u.getPath());
                         puz = IO.load(baseFile);
                     }
                 }
@@ -156,6 +161,12 @@ public abstract class InGameActivity extends ShortyzActivity {
         }
 
         super.onRestart();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        render();
     }
 
     @Override

@@ -12,6 +12,7 @@ import android.inputmethodservice.KeyboardView.OnKeyboardActionListener;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.KeyEvent;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
@@ -45,16 +46,6 @@ public class ClueListActivity extends InGameActivity {
 	public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
 	}
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        if(item == null){
-            finish();
-            return true;
-        } else {
-            return super.onOptionsItemSelected(item);
-        }
-    }
 
     @Override
 	public void onCreate(Bundle icicle) {
@@ -316,6 +307,30 @@ public class ClueListActivity extends InGameActivity {
 		}
 
 	}
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        menu.add("Notes").setIcon(android.R.drawable.ic_menu_agenda);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @SuppressWarnings("deprecation")
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item == null) {
+            this.finish();
+            return true;
+        }
+
+        if (item.getTitle().toString().equals("Notes")) {
+            Intent i = new Intent(ClueListActivity.this, NotesActivity.class);
+            i.setData(Uri.fromFile(baseFile));
+            ClueListActivity.this.startActivityForResult(i, 0);
+
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
 
 	protected void render() {
         renderKeyboard();

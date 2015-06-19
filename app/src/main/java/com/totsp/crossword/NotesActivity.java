@@ -12,6 +12,8 @@ import android.net.Uri;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.util.TypedValue;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.KeyEvent;
 import android.view.View;
@@ -60,20 +62,6 @@ public class NotesActivity extends InGameActivity {
 
         utils.holographic(this);
 		utils.finishOnHomeButton(this);
-
-        if(BOARD == null || BOARD.getPuzzle() == null){
-            finish();
-            return;
-        }
-
-        Uri u = this.getIntent().getData();
-
-		if (u != null) {
-			if (u.getScheme().equals("file")) {
-				baseFile = new File(u.getPath());
-			}
-		}
-
         setContentView(R.layout.notes);
 
         createKeyboard((KeyboardView)this.findViewById(R.id.notesKeyboard));
@@ -317,8 +305,6 @@ public class NotesActivity extends InGameActivity {
 		}
 	}
 
-
-
 	@Override
 	public boolean onKeyUp(int keyCode, KeyEvent event) {
         if (keyCode == KeyEvent.KEYCODE_BACK) {
@@ -431,6 +417,25 @@ public class NotesActivity extends InGameActivity {
 
 		return super.onKeyUp(keyCode, event);
 	}
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        menu.add("Clues").setIcon(android.R.drawable.ic_menu_agenda);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @SuppressWarnings("deprecation")
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getTitle().toString().equals("Clues")) {
+            Intent i = new Intent(NotesActivity.this, ClueListActivity.class);
+            i.setData(Uri.fromFile(baseFile));
+            NotesActivity.this.startActivityForResult(i, 0);
+
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
 
     private void afterPlay() {
         if (puz.getPercentComplete() == 100) {

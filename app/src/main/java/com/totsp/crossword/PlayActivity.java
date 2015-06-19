@@ -681,7 +681,6 @@ public class PlayActivity extends InGameActivity {
     @SuppressWarnings("deprecation")
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        System.out.println(item.getTitle());
         if (item.getTitle() == null) {
             finish();
             return true;
@@ -774,13 +773,7 @@ public class PlayActivity extends InGameActivity {
     }
 
     @Override
-    protected void onRestart() {
-        super.onRestart();
-    }
-
-    @Override
     protected void onResume() {
-        super.onResume();
         this.resumedOn = System.currentTimeMillis();
         BOARD.setSkipCompletedLetters(this.prefs
                 .getBoolean("skipFilled", false));
@@ -797,7 +790,7 @@ public class PlayActivity extends InGameActivity {
             this.handler.post(this.updateTimeTask);
         }
 
-        render();
+        super.onResume();
     }
 
     private void setClueSize(int dps) {
