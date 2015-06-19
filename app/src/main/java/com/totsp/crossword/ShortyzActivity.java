@@ -18,6 +18,7 @@ import android.util.DisplayMetrics;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
+import com.totsp.crossword.shortyz.R;
 
 import com.totsp.crossword.versions.AndroidVersionUtils;
 
