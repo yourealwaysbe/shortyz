@@ -84,6 +84,7 @@ public class PlayActivity extends InGameActivity {
     private TextView clue;
     private boolean fitToScreen;
     private boolean runTimer = false;
+    private Handler handler = new Handler();
     private Runnable updateTimeTask = new Runnable() {
         public void run() {
             if (timer != null) {
