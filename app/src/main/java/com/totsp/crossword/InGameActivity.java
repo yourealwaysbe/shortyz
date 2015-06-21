@@ -54,6 +54,7 @@ public abstract class InGameActivity extends ShortyzActivity {
 
     /**
      * If puz is null after this call, do not continue
+     * gets puzzle from BOARD unless BOARD is null
      */
     @Override
     public void onCreate(Bundle savedInstanceState) {
