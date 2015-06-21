@@ -52,7 +52,6 @@ public abstract class InGameActivity extends ShortyzActivity {
     private Dialog dialog;
     private AlertDialog revealPuzzleDialog;
 
-
     /**
      * If puz is null after this call, do not continue
      */
@@ -381,7 +380,6 @@ public abstract class InGameActivity extends ShortyzActivity {
                 });
 	}
 
-
     private Dialog createInfoDialog() {
         if (dialog == null) {
             dialog = new Dialog(this);
@@ -420,6 +418,10 @@ public abstract class InGameActivity extends ShortyzActivity {
             puz.setTime(timer.getElapsed());
         }
         this.timer = null;
+    }
+
+    protected boolean isTiming() {
+        return timer != null;
     }
 
     protected abstract void render();
@@ -471,7 +473,6 @@ public abstract class InGameActivity extends ShortyzActivity {
                 keyboardView.invalidateAllKeys();
             }
         });
-
     }
 }
 

@@ -419,7 +419,7 @@ public class NotesActivity extends InGameActivity {
 	}
 
     private void afterPlay() {
-        if (puz.getPercentComplete() == 100) {
+        if (puz.getPercentComplete() == 100 && isTiming()) {
             stopTimer();
             Intent i = new Intent(NotesActivity.this, PuzzleFinishedActivity.class);
             this.startActivity(i);
