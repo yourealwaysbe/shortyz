@@ -1093,12 +1093,11 @@ public class PlayActivity extends InGameActivity {
             }
         }
 
-        if ((puz.getPercentComplete() == 100)) {
+        if ((puz.getPercentComplete() == 100) && isTiming()) {
             stopTimer();
             Intent i = new Intent(PlayActivity.this,
                     PuzzleFinishedActivity.class);
             this.startActivity(i);
-
         }
         this.boardView.requestFocus();
     }

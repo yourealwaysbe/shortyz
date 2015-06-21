@@ -275,6 +275,12 @@ public abstract class InGameActivity extends ShortyzActivity {
         this.timer = null;
     }
 
+    // This is used as a proxy for "do we already know the puzzle has been
+    // completed"
+    protected boolean isTiming() {
+        return timer != null;
+    }
+
     protected abstract void render();
 }
 

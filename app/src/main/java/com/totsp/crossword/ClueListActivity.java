@@ -387,7 +387,7 @@ public class ClueListActivity extends InGameActivity {
 
 			this.render();
 
-			if ((puz.getPercentComplete() == 100)) {
+			if ((puz.getPercentComplete() == 100) && isTiming()) {
                 stopTimer();
 	            Intent i = new Intent(ClueListActivity.this, PuzzleFinishedActivity.class);
 	            this.startActivity(i);
