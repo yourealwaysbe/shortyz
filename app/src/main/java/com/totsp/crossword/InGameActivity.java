@@ -40,6 +40,7 @@ public abstract class InGameActivity extends ShortyzActivity {
 
     /**
      * If puz is null after this call, do not continue
+     * uses the puzzle on BOARD unless BOARD is null
      */
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -49,15 +50,17 @@ public abstract class InGameActivity extends ShortyzActivity {
             if (BOARD != null)
                 puz = BOARD.getPuzzle();
 
-            if (puz == null) {
-                Uri u = this.getIntent().getData();
+            Uri u = this.getIntent().getData();
 
-                if (u != null) {
-                    if (u.getScheme().equals("file")) {
-                        baseFile = new File(u.getPath());
-                        puz = IO.load(baseFile);
-                    }
+            baseFile = null;
+            if (u != null) {
+                if (u.getScheme().equals("file")) {
+                    baseFile = new File(u.getPath());
                 }
+            }
+
+            if (puz == null) {
+                puz = IO.load(baseFile);
 
                 if (puz == null) {
                     throw new IOException();

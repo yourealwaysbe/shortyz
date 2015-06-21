@@ -144,6 +144,8 @@ public class PlayActivity extends InGameActivity {
     @SuppressWarnings({"rawtypes", "unchecked"})
     @Override
     public void onCreate(Bundle savedInstanceState) {
+        // force reload of board (this is getting hacky...)
+        BOARD = null;
         super.onCreate(savedInstanceState);
         if (puz == null)
             return;
